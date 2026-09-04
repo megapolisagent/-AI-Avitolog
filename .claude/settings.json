@@ -1,0 +1,25 @@
+﻿{
+    "permissions":  {
+                        "allow":  [
+                                      "WebFetch"
+                                  ],
+                        "deny":  [
+                                     "WebFetch(domain:avito.ru)",
+                                     "WebFetch(domain:cian.ru)",
+                                     "WebFetch(domain:domclick.ru)",
+                                     "WebFetch(domain:m2.ru)",
+                                     "WebFetch(domain:youla.ru)",
+                                     "WebFetch(domain:irr.ru)",
+                                     "Read(./**/node_modules/**)",
+                                     "Read(./**/dist/**)",
+                                     "Read(./**/build/**)",
+                                     "Read(./**/__pycache__/**)",
+                                     "Read(./**/.venv/**)",
+                                     "Read(./**/venv/**)",
+                                     "Read(./**/vendor/**)",
+                                     "Read(./**/*.min.js)",
+                                     "Read(./**/package-lock.json)",
+                                     "Read(./**/poetry.lock)"
+                                 ]
+                    }
+}

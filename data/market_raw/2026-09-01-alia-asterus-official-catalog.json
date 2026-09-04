@@ -1,0 +1,314 @@
+{
+  "source": "alia.moscow (официальный сайт застройщика ASTERUS)",
+  "collected_via": "Firecrawl firecrawl_map, 2026-09-01, ENGINEER",
+  "method_note": "Данные взяты из title/description индексируемых страниц сайта (реальные цены, площади, этажи) — не выдуманы, не суммаризатор. Полного обхода всех 201 позиции не делалось — это выборка ~35 лотов, попавших в map-индекс по запросу 'квартиры планировки цены'.",
+  "count": 34,
+  "lots": [
+    {
+      "rooms": 1,
+      "area_m2": 43.0,
+      "price_rub": 26763200,
+      "price_per_m2_rub": 622400,
+      "floor": 36,
+      "url": "https://alive.alia.moscow/flats/13A-К2-6-36-4-1359",
+      "note": null
+    },
+    {
+      "rooms": 2,
+      "area_m2": 73.9,
+      "price_rub": 46265095,
+      "price_per_m2_rub": 626050,
+      "floor": 25,
+      "url": "https://alia.moscow/flats/korpus3-2kom-73m2-25ehtazh-10F-K3-1-25-8-562",
+      "note": null
+    },
+    {
+      "rooms": 3,
+      "area_m2": 148.2,
+      "price_rub": 98553000,
+      "price_per_m2_rub": 665000,
+      "floor": 10,
+      "url": "https://alia.moscow/flats/korpus2-3kom-149m2-10ehtazh-10F-K2-1-10-1-313",
+      "note": null
+    },
+    {
+      "rooms": 3,
+      "area_m2": 91.4,
+      "price_rub": 67727400,
+      "price_per_m2_rub": 741000,
+      "floor": 27,
+      "url": "https://alia.moscow/flats/korpus3-3kom-90m2-27ehtazh-10F-K3-1-27-5-577",
+      "note": null
+    },
+    {
+      "rooms": 3,
+      "area_m2": 101.8,
+      "price_rub": 70852800,
+      "price_per_m2_rub": 696000,
+      "floor": 22,
+      "url": "https://alia.moscow/flats/korpus1-3kom-103m2-22ehtazh-10F-K1-2-22-3-193",
+      "note": null
+    },
+    {
+      "rooms": 1,
+      "area_m2": 41.4,
+      "price_rub": 30952710,
+      "price_per_m2_rub": 747650,
+      "floor": 14,
+      "url": "https://alia.moscow/flats/korpus3-1kom-41m2-14ehtazh-10F-K3-1-14-5-460",
+      "note": null
+    },
+    {
+      "rooms": 2,
+      "area_m2": 65.7,
+      "price_rub": 32882850,
+      "price_per_m2_rub": 500500,
+      "floor": 23,
+      "url": "https://alia.moscow/flats/korpus1-13A-2kom-65m2-23ehtazh-13A-K1-5-23-1-983",
+      "note": null
+    },
+    {
+      "rooms": 1,
+      "area_m2": 39.4,
+      "price_rub": 26424398,
+      "price_per_m2_rub": 670670,
+      "floor": 9,
+      "url": "https://alia.moscow/flats/korpus5-13B-1kom-39m2-9ehtazh-13B-K5-3-9-4-483",
+      "note": null
+    },
+    {
+      "rooms": 5,
+      "area_m2": 141.2,
+      "price_rub": 90410360,
+      "price_per_m2_rub": 640300,
+      "floor": 25,
+      "url": "https://alia.moscow/flats/korpus11-5kom-141m2-25ehtazh-10E-K11-1-25-3-217",
+      "note": "скидка 100% оплата, без скидки 95168800"
+    },
+    {
+      "rooms": 2,
+      "area_m2": 53.3,
+      "price_rub": 35418383,
+      "price_per_m2_rub": 664510,
+      "floor": 9,
+      "url": "https://alia.moscow/flats/korpus5-13B-2kom-53m2-9ehtazh-13B-K5-3-9-9-488",
+      "note": null
+    },
+    {
+      "rooms": 4,
+      "area_m2": 113.2,
+      "price_rub": 73217760,
+      "price_per_m2_rub": 646800,
+      "floor": 9,
+      "url": "https://alia.moscow/flats/korpus2-4kom-113m2-9ehtazh-10F-K2-2-9-1-337",
+      "note": null
+    },
+    {
+      "rooms": 1,
+      "area_m2": 40.8,
+      "price_rub": 26112000,
+      "price_per_m2_rub": 640000,
+      "floor": 13,
+      "url": "https://alia.moscow/flats/korpus3-13B-1kom-40m2-13ehtazh-13B-K3-1-13-8-118",
+      "note": "субсидированная ипотека 4%, без скидки 32640000"
+    },
+    {
+      "rooms": 2,
+      "area_m2": 55.9,
+      "price_rub": 31507476,
+      "price_per_m2_rub": 563640,
+      "floor": 13,
+      "url": "https://alia.moscow/flats/korpus6-13B-2kom-55m2-13ehtazh-13B-K6-4-13-1-660",
+      "note": null
+    },
+    {
+      "rooms": 1,
+      "area_m2": 43.0,
+      "price_rub": 28971250,
+      "price_per_m2_rub": 673750,
+      "floor": 4,
+      "url": "https://alia.moscow/flats/korpus5-13B-1kom-43m2-4ehtazh-13B-K5-3-4-10-429",
+      "note": null
+    },
+    {
+      "rooms": 2,
+      "area_m2": 53.3,
+      "price_rub": 34843809,
+      "price_per_m2_rub": 653730,
+      "floor": 2,
+      "url": "https://alia.moscow/flats/korpus5-13B-2kom-53m2-2ehtazh-13B-K5-3-2-9-404",
+      "note": null
+    },
+    {
+      "rooms": 2,
+      "area_m2": 54.7,
+      "price_rub": 30704751,
+      "price_per_m2_rub": 561330,
+      "floor": 9,
+      "url": "https://alia.moscow/flats/korpus3-13B-2kom-54m2-9ehtazh-13B-K3-1-9-1-071",
+      "note": null
+    },
+    {
+      "rooms": 1,
+      "area_m2": 43.6,
+      "price_rub": 22981560,
+      "price_per_m2_rub": 527100,
+      "floor": 25,
+      "url": "https://alia.moscow/flats/korpus3-13B-1kom-43m2-25ehtazh-13B-K3-1-25-4-222",
+      "note": null
+    },
+    {
+      "rooms": 3,
+      "area_m2": 105.3,
+      "price_rub": 75921300,
+      "price_per_m2_rub": 721000,
+      "floor": 9,
+      "url": "https://alia.moscow/flats/korpus2-3kom-106m2-9ehtazh-10F-K2-2-9-2-338",
+      "note": null
+    },
+    {
+      "rooms": 3,
+      "area_m2": 81.9,
+      "price_rub": 48810762,
+      "price_per_m2_rub": 595980,
+      "floor": 23,
+      "url": "https://alia.moscow/flats/korpus3-13B-3kom-81m2-23ehtazh-13B-K3-1-23-6-208",
+      "note": null
+    },
+    {
+      "rooms": 1,
+      "area_m2": 38.4,
+      "price_rub": 25398912,
+      "price_per_m2_rub": 661430,
+      "floor": 2,
+      "url": "https://alia.moscow/flats/korpus5-13B-1kom-38m2-2ehtazh-13B-K5-3-2-8-403",
+      "note": null
+    },
+    {
+      "rooms": 2,
+      "area_m2": 64.9,
+      "price_rub": 34072500,
+      "price_per_m2_rub": 525000,
+      "floor": 33,
+      "url": "https://alia.moscow/flats/korpus2-13A-2kom-64m2-33ehtazh-13A-K2-6-33-1-1335",
+      "note": null
+    },
+    {
+      "rooms": 2,
+      "area_m2": 51.7,
+      "price_rub": 33917268,
+      "price_per_m2_rub": 656040,
+      "floor": 12,
+      "url": "https://alia.moscow/flats/korpus6-13B-2kom-51m2-12ehtazh-13B-K6-4-12-7-656",
+      "note": null
+    },
+    {
+      "rooms": 1,
+      "area_m2": 36.3,
+      "price_rub": 22640310,
+      "price_per_m2_rub": 623700,
+      "floor": 26,
+      "url": "https://alia.moscow/flats/korpus3-13B-1kom-36m2-26ehtazh-13B-K3-1-26-3-229",
+      "note": null
+    },
+    {
+      "rooms": 2,
+      "area_m2": 49.8,
+      "price_rub": 31060260,
+      "price_per_m2_rub": 623700,
+      "floor": 23,
+      "url": "https://alia.moscow/flats/korpus6-13B-2kom-49m2-23ehtazh-13B-K6-4-23-4-760",
+      "note": null
+    },
+    {
+      "rooms": 1,
+      "area_m2": 43.0,
+      "price_rub": 25542000,
+      "price_per_m2_rub": 594000,
+      "floor": 36,
+      "url": "https://alia.moscow/flats/korpus2-13A-1kom-43m2-36ehtazh-13A-K2-6-36-4-1359",
+      "note": null
+    },
+    {
+      "rooms": 2,
+      "area_m2": 65.6,
+      "price_rub": 33429760,
+      "price_per_m2_rub": 509600,
+      "floor": 21,
+      "url": "https://alia.moscow/flats/korpus2-13A-2kom-65m2-21ehtazh-13A-K2-6-21-1-1242",
+      "note": "100% оплата, без скидки 47756800"
+    },
+    {
+      "rooms": 1,
+      "area_m2": 39.4,
+      "price_rub": 26537750,
+      "price_per_m2_rub": 673547,
+      "floor": 11,
+      "url": "https://alia.moscow/flats/korpus5-13B-1kom-39m2-11ehtazh-13B-K5-3-11-4-506",
+      "note": "673750 руб/м2 явно на странице"
+    },
+    {
+      "rooms": 2,
+      "area_m2": 54.3,
+      "price_rub": 35873838,
+      "price_per_m2_rub": 660660,
+      "floor": 9,
+      "url": "https://alia.moscow/flats/korpus5-13B-2kom-54m2-9ehtazh-13B-K5-3-9-2-481",
+      "note": "660660 руб/м2 явно на странице"
+    },
+    {
+      "rooms": 1,
+      "area_m2": 35.0,
+      "price_rub": 25452000,
+      "price_per_m2_rub": 727200,
+      "floor": 8,
+      "url": "https://alia.moscow/flats/korpus4-13B-1kom-35m2-8ehtazh-13B-K4-2-8-5-315",
+      "note": "727200 руб/м2 явно на странице, white box"
+    },
+    {
+      "rooms": 1,
+      "area_m2": 44.5,
+      "price_rub": 25231500,
+      "price_per_m2_rub": 567000,
+      "floor": 29,
+      "url": "https://alia.moscow/flats/korpus2-13A-1kom-44m2-29ehtazh-13A-K2-6-29-3-1308",
+      "note": "567000 руб/м2 явно на странице, без отделки"
+    },
+    {
+      "rooms": 1,
+      "area_m2": 44.5,
+      "price_rub": 24530625,
+      "price_per_m2_rub": 551250,
+      "floor": 18,
+      "url": "https://alia.moscow/flats/korpus2-13A-1kom-44m2-18ehtazh-13A-K2-6-18-3-1220",
+      "note": "551250 руб/м2 явно на странице, без отделки"
+    },
+    {
+      "rooms": 2,
+      "area_m2": 65.7,
+      "price_rub": 33296760,
+      "price_per_m2_rub": 506800,
+      "floor": 27,
+      "url": "https://alia.moscow/flats/korpus1-13A-2kom-65m2-27ehtazh-13A-K1-5-27-1-1015",
+      "note": "506800 руб/м2 явно на странице, без отделки"
+    },
+    {
+      "rooms": 1,
+      "area_m2": 40.5,
+      "price_rub": 24293115,
+      "price_per_m2_rub": 599830,
+      "floor": 2,
+      "url": "https://alia.moscow/flats/korpus3-13B-1kom-40m2-2ehtazh-13B-K3-1-2-8-008",
+      "note": "599830 руб/м2 явно на странице, без отделки"
+    },
+    {
+      "rooms": 2,
+      "area_m2": 117.0,
+      "price_rub": 72891000,
+      "price_per_m2_rub": 623000,
+      "floor": 25,
+      "url": "https://alia.moscow/flats/korpus11-2kom-117m2-25ehtazh-10E-K11-1-25-4-216",
+      "note": null
+    }
+  ]
+}
