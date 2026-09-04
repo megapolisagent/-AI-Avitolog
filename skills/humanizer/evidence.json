@@ -1,0 +1,25 @@
+{
+  "skill": "humanizer",
+  "category": "WRITING",
+  "origin": {
+    "source": "blader/humanizer",
+    "source_path": "SKILL.md",
+    "type": "adapted",
+    "note": "Перенесено 2026-09-04 (владелец → ENGINEER) из blader/humanizer (GitHub, MIT license) как справочный материал для широкого применения — Tone of Voice / устранение штампов",
+    "recorded": "2026-09-04T15:47:11+00:00"
+  },
+  "description_ru": "Убрать из текста ИИ-штампы и канцелярит без потери фактов — правило дома против «воды» и шаблонных оборотов.",
+  "evaluations": [],
+  "usage": {
+    "count": 0,
+    "last_used": null,
+    "log": []
+  },
+  "review": {
+    "requested": false,
+    "requested_date": null,
+    "reason": null
+  },
+  "deprecated": false,
+  "deprecated_reason": null
+}

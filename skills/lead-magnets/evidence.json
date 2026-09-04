@@ -1,0 +1,25 @@
+{
+  "skill": "lead-magnets",
+  "category": "STRATEGY",
+  "origin": {
+    "source": "coreyhaines31/marketingskills",
+    "source_path": "",
+    "type": "adapted",
+    "note": "Перенесено 2026-09-04 по рекомендации Кодекса, MIT.",
+    "recorded": "2026-09-04T18:17:49+00:00"
+  },
+  "description_ru": null,
+  "evaluations": [],
+  "usage": {
+    "count": 0,
+    "last_used": null,
+    "log": []
+  },
+  "review": {
+    "requested": false,
+    "requested_date": null,
+    "reason": null
+  },
+  "deprecated": false,
+  "deprecated_reason": null
+}
