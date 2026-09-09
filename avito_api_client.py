@@ -424,7 +424,7 @@ class AvitoAPIClient:
         обрабатываться — см. описание метода в knowledge/reference/04_feed_technical/avito-api-autoload.json).
         Закрывает большинство реальных случаев без обращения к report_id вообще — миграция
         с deprecated Autoload v2 (аудит Codex, 2026-09-02, CRITICAL C-3; дедлайн сокращения
-        данных 08.09.2026, отключение 08.03.2027 — зафиксировано в OPEN_QUESTIONS.md).
+        данных 08.09.2026, отключение 08.03.2027 — отслеживать вручную до этой даты).
         """
         if which not in ("last_successful", "current"):
             raise ValueError('which должен быть "last_successful" или "current"')
@@ -450,7 +450,7 @@ class AvitoAPIClient:
         предпочитай его для обычного случая "что с моей последней выгрузкой"). GET
         /autoload/v2/reports/{report_id} + GET /autoload/v2/reports/{report_id}/items.
         ВНИМАНИЕ: оба метода помечены в swagger deprecated — с 08.09.2026 отдают меньше данных,
-        отключаются 08.03.2027 (см. OPEN_QUESTIONS.md — миграция отслеживается с дедлайном).
+        отключаются 08.03.2027 — отслеживать вручную до этой даты.
         """
         print("[avito] ПРЕДУПРЕЖДЕНИЕ: /autoload/v2/reports/* deprecated, с 08.09.2026 меньше данных, отключение 08.03.2027", file=sys.stderr)
         headers = self.auth_headers()
