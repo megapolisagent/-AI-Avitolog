@@ -482,6 +482,136 @@ class AvitoAPIClient:
         self._save_raw_log("balance", resp)
         return resp
 
+    # --- Продвижение / BBIP (источник: knowledge/reference/02_conversion_retention/avito-api-promotion-swagger.json,
+    # прислан владельцем 2026-09-10 — раньше единственный из 13 API без файла и без реализации). Оплата
+    # услуг продвижения через Public API — только с Кошелька Авито. Порядок вызовов для реального
+    # подключения BBIP — строго: dict → get_active_services (нет ли уже активной BBIP) → get_bbip_suggests
+    # → get_bbip_forecast → create_bbip_order → get_bbip_order_status. Пропускать шаги нельзя — заявка
+    # на подключение требует конкретных budget/duration, взятых из bbip_suggests, не придуманных.
+
+    def get_promotion_services_dict(self):
+        """Словарь реальных типов услуг продвижения (slug/name/isDeprecated) — источник настоящих
+        названий пакетов вместо x2/x5/x10/XL "со слов". POST /promotion/v1/items/services/dict."""
+        status, resp = self._request(
+            "POST", "/promotion/v1/items/services/dict", headers=self.auth_headers(),
+        )
+        if status != 200:
+            raise SystemExit(f"get_promotion_services_dict не сработал (status {status}): {resp}")
+        self._save_raw_log("promotion-services-dict", resp)
+        return resp
+
+    def get_active_services_by_items(self, item_ids):
+        """Активные услуги продвижения по конкретным объявлениям — обязательный шаг перед BBIP,
+        чтобы не подать заявку повторно на уже активную услугу (slug "bbip").
+        POST /promotion/v1/items/services/get."""
+        status, resp = self._request(
+            "POST", "/promotion/v1/items/services/get", headers=self.auth_headers(),
+            data={"itemIds": item_ids},
+        )
+        if status != 200:
+            raise SystemExit(f"get_active_services_by_items не сработал (status {status}): {resp}")
+        self._save_raw_log("promotion-active-services", resp)
+        return resp
+
+    def get_bbip_suggests(self, item_ids):
+        """Доступные варианты бюджета/длительности продвижения по объявлениям (с пометкой
+        isRecommended). POST /promotion/v1/items/services/bbip/suggests/get."""
+        status, resp = self._request(
+            "POST", "/promotion/v1/items/services/bbip/suggests/get", headers=self.auth_headers(),
+            data={"itemIds": item_ids},
+        )
+        if status != 200:
+            raise SystemExit(f"get_bbip_suggests не сработал (status {status}): {resp}")
+        self._save_raw_log("bbip-suggests", resp)
+        return resp
+
+    def get_bbip_forecast(self, items):
+        """Прогноз прироста просмотров и итоговой стоимости для выбранного бюджета/длительности.
+        items — список {"itemId", "duration", "oldPrice", "price"} (price/oldPrice — в копейках,
+        за один день, взять из get_bbip_suggests, не выдумывать). POST
+        /promotion/v1/items/services/bbip/forecasts/get."""
+        status, resp = self._request(
+            "POST", "/promotion/v1/items/services/bbip/forecasts/get", headers=self.auth_headers(),
+            data={"items": items},
+        )
+        if status != 200:
+            raise SystemExit(f"get_bbip_forecast не сработал (status {status}): {resp}")
+        self._save_raw_log("bbip-forecast", resp)
+        return resp
+
+    def create_bbip_order(self, items):
+        """Заявка на подключение BBIP — реально тратит деньги с Кошелька Авито. items — тот же
+        формат, что в get_bbip_forecast. ТОЛЬКО после явного «да» владелицы (CLAUDE.md §9) —
+        этот метод не решает сам, вызывать его или нет. PUT /promotion/v1/items/services/bbip/orders/create."""
+        status, resp = self._request(
+            "PUT", "/promotion/v1/items/services/bbip/orders/create", headers=self.auth_headers(),
+            data={"items": items},
+        )
+        if status != 200:
+            raise SystemExit(f"create_bbip_order не сработал (status {status}): {resp}")
+        self._save_raw_log("bbip-order-create", resp)
+        return resp
+
+    def get_bbip_order_status(self, order_id):
+        """Статус заявки на подключение услуги (unknown/initialized/waiting/in_process/processed)
+        и статус по каждому объявлению внутри. POST /promotion/v1/items/services/orders/status."""
+        status, resp = self._request(
+            "POST", "/promotion/v1/items/services/orders/status", headers=self.auth_headers(),
+            data={"orderId": order_id},
+        )
+        if status != 200:
+            raise SystemExit(f"get_bbip_order_status не сработал (status {status}): {resp}")
+        self._save_raw_log(f"bbip-order-status-{order_id}", resp)
+        return resp
+
+    # --- TrxPromo — продвижение за комиссию (источник: knowledge/reference/02_conversion_retention/
+    # avito-api-trxpromo-swagger.json) ---
+    # ВАЖНО: отличается от BBIP выше — там предоплаченный пакет просмотров, здесь процент
+    # (1-15%, сотые доли — 1500 = 15%) сверх базовой комиссии сделки. По формулировке метода
+    # apply ("базовая комиссия зависит от мгновенного бронирования") относится к
+    # краткосрочной аренде, не к продаже/долгосрочной аренде новостроек — см. пометку
+    # [УТОЧНИТЬ] в knowledge/avito-platform-mechanics.md, если объекты владелицы не подходят
+    # под этот профиль, метод вызывать не для чего.
+
+    def get_trxpromo_commissions(self, item_ids):
+        """Доступность продвижения за комиссию и вилка ставки (valueMin/valueMax/step,
+        сотые доли процента) по каждому объявлению. GET /trx-promo/1/commissions."""
+        status, resp = self._request(
+            "GET", "/trx-promo/1/commissions", headers=self.auth_headers(),
+            data={"itemIDs": item_ids},
+        )
+        if status != 200:
+            raise SystemExit(f"get_trxpromo_commissions не сработал (status {status}): {resp}")
+        self._save_raw_log("trxpromo-commissions", resp)
+        return resp
+
+    def apply_trxpromo(self, items):
+        """Запуск продвижения за комиссию. МУТИРУЮЩИЙ — реально включает платное продвижение
+        с комиссией сверх сделки, тот же уровень риска, что create_bbip_order (CLAUDE.md §9,
+        нужно явное «да» владелицы). items — список {"itemID","commission","dateFrom",
+        "dateTo"?} (commission в сотых долях процента, dateFrom обязателен).
+        POST /trx-promo/1/apply."""
+        status, resp = self._request(
+            "POST", "/trx-promo/1/apply", headers=self.auth_headers(),
+            data={"items": items},
+        )
+        if status != 200:
+            raise SystemExit(f"apply_trxpromo не сработал (status {status}): {resp}")
+        self._save_raw_log("trxpromo-apply", resp)
+        return resp
+
+    def cancel_trxpromo(self, item_ids):
+        """Отмена действующего/запланированного продвижения за комиссию. МУТИРУЮЩИЙ.
+        POST /trx-promo/1/cancel."""
+        status, resp = self._request(
+            "POST", "/trx-promo/1/cancel", headers=self.auth_headers(),
+            data={"itemIDs": item_ids},
+        )
+        if status != 200:
+            raise SystemExit(f"cancel_trxpromo не сработал (status {status}): {resp}")
+        self._save_raw_log("trxpromo-cancel", resp)
+        return resp
+
 
 if __name__ == "__main__":
     import argparse

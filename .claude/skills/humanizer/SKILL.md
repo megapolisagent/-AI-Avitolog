@@ -10,14 +10,7 @@ metadata:
   version: "2.11.2"
 ---
 
-> Перенесено 2026-09-04 (владелец → ENGINEER) из `blader/humanizer` (GitHub, MIT license,
-> оригинал: `references/LICENSE-original`) как справочный материал для широкого применения —
-> прямая связь с уже существующей проблемой этого дома (Tone of Voice, Data Sourcing Guard,
-> «штампы» — Behavioral Contract, `ENGINEER/skills/repository-design/SKILL.md`). Не подключено
-> как активный Skill ни одному агенту этим ходом — лежит в общей библиотеке, решение о поднятии
-> на уровень Foundation (максимальный радиус применения) — отдельный Proposal, не Locked
-> автоматически этим переносом. Оригинальный текст ниже не переведён и не адаптирован под дом —
-> сохранён как первоисточник, оригинальный `scripts/validate-package.py` — в `references/`.
+> Источник: `blader/humanizer` (GitHub, MIT license, оригинал — `references/LICENSE-original`).
 
 # Humanizer: remove AI writing patterns
 

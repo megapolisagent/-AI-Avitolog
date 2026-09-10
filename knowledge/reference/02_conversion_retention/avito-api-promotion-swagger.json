@@ -1,0 +1,173 @@
+{
+  "components": {
+    "parameters": {
+      "AuthHeader": {
+        "description": "Токен для авторизации",
+        "example": "Bearer ACCESS_TOKEN",
+        "in": "header",
+        "name": "Authorization",
+        "required": true,
+        "schema": { "type": "string" }
+      },
+      "XEmployeeOf": {
+        "description": "Идентификатор компании, от имени которой работает сотрудник",
+        "in": "header",
+        "name": "X-Employee-Of",
+        "schema": { "minimum": 1, "nullable": true, "type": "integer" }
+      },
+      "XIsEmployee": {
+        "deprecated": true,
+        "description": "Устаревший заголовок, используйте X-Employee-Of.",
+        "in": "header",
+        "name": "X-Is-Employee",
+        "schema": { "type": "string" }
+      }
+    },
+    "schemas": {
+      "BbipForecastByItemV1": {
+        "description": "Прогноз продвижения по объявлению",
+        "properties": {
+          "itemId": { "format": "int64", "type": "integer" },
+          "max": { "description": "Ожидаемый максимальный прирост просмотров", "type": "integer" },
+          "min": { "description": "Ожидаемый минимальный прирост просмотров", "type": "integer" },
+          "totalOldPrice": { "description": "Ценность продвижения до скидок (копейки)", "type": "integer" },
+          "totalPrice": { "description": "Итоговая стоимость продвижения (копейки)", "type": "integer" }
+        },
+        "required": ["itemId", "min", "max", "totalOldPrice", "totalPrice"],
+        "type": "object"
+      },
+      "BbipSuggestBudgetV1": {
+        "description": "Вариант бюджета продвижения",
+        "properties": {
+          "isRecommended": { "type": "boolean" },
+          "oldPrice": { "description": "Цена/день до скидок (копейки)", "format": "int64", "type": "integer" },
+          "price": { "description": "Цена/день (копейки)", "format": "int64", "type": "integer" }
+        },
+        "required": ["price", "oldPrice"],
+        "type": "object"
+      },
+      "BbipSuggestDurationRangeV1": {
+        "description": "Вилка периодов продвижения в днях",
+        "properties": {
+          "from": { "type": "integer" },
+          "recommended": { "type": "integer" },
+          "to": { "type": "integer" }
+        },
+        "required": ["from", "to"],
+        "type": "object"
+      },
+      "OrderStatus": {
+        "description": "unknown/initialized/waiting/in_process/processed",
+        "enum": ["unknown", "initialized", "waiting", "in_process", "processed"],
+        "type": "string"
+      },
+      "ServiceInfoV1": {
+        "description": "Тип услуги продвижения (словарь)",
+        "properties": {
+          "isDeprecated": { "type": "boolean" },
+          "name": { "type": "string" },
+          "slug": { "type": "string" }
+        },
+        "required": ["slug", "name"],
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "AuthorizationCode": {
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://avito.ru/oauth",
+            "scopes": {
+              "items:apply_bbip": "Применение услуг продвижения BBIP",
+              "items:info": "Получение информации об объявлениях"
+            },
+            "tokenUrl": "https://api.avito.ru/token"
+          }
+        },
+        "type": "oauth2"
+      },
+      "ClientCredentials": {
+        "flows": { "clientCredentials": { "scopes": {}, "tokenUrl": "https://api.avito.ru/token" } },
+        "type": "oauth2"
+      }
+    }
+  },
+  "info": {
+    "contact": { "email": "supportautoload@avito.ru" },
+    "description": "API для управления услугами продвижения по объявлениям.",
+    "title": "Продвижение",
+    "version": "1.0.0"
+  },
+  "openapi": "3.0.0",
+  "paths": {
+    "/promotion/v1/items/services/bbip/forecasts/get": {
+      "post": {
+        "description": "Получение прогноза продвижения по объявлениям. Rate limit: 100 RPM",
+        "operationId": "get_bbip_forecasts_by_items_v1",
+        "security": [{ "AuthorizationCode": ["items:apply_bbip"] }, { "ClientCredentials": [] }],
+        "summary": "BBIP. Прогноз продвижения",
+        "tags": ["Promotion_BBIP"]
+      }
+    },
+    "/promotion/v1/items/services/bbip/orders/create": {
+      "put": {
+        "description": "Создать заявку на подключение услуг продвижения. Rate limit: 10 RPM",
+        "operationId": "create_bbip_order_for_items_v1",
+        "security": [{ "AuthorizationCode": ["items:apply_bbip"] }, { "ClientCredentials": [] }],
+        "summary": "BBIP. Подключение услуги продвижения",
+        "tags": ["Promotion_BBIP"]
+      }
+    },
+    "/promotion/v1/items/services/bbip/suggests/get": {
+      "post": {
+        "description": "Получение доступных вариантов бюджета для продвижения. Rate limit: 100 RPM",
+        "operationId": "get_bbip_suggests_by_items_v1",
+        "security": [{ "AuthorizationCode": ["items:apply_bbip"] }, { "ClientCredentials": [] }],
+        "summary": "BBIP. Варианты бюджета продвижения",
+        "tags": ["Promotion_BBIP"]
+      }
+    },
+    "/promotion/v1/items/services/dict": {
+      "post": {
+        "description": "Получение словаря типов услуг продвижения. Rate limit: 100 RPM",
+        "operationId": "get_dict_of_services_v1",
+        "security": [{ "AuthorizationCode": ["items:info"] }, { "ClientCredentials": [] }],
+        "summary": "Словарь типов услуг продвижения",
+        "tags": ["Promotion"]
+      }
+    },
+    "/promotion/v1/items/services/get": {
+      "post": {
+        "description": "Получение списка активных услуг продвижения по объявлениям. Rate limit: 100 RPM",
+        "operationId": "get_services_by_items_v1",
+        "security": [{ "AuthorizationCode": ["items:info"] }, { "ClientCredentials": [] }],
+        "summary": "Список услуг продвижения",
+        "tags": ["Promotion"]
+      }
+    },
+    "/promotion/v1/items/services/orders/get": {
+      "post": {
+        "description": "Получение списка заявок на подключение услуг. Rate limit: 100 RPM",
+        "operationId": "list_orders_by_user_v1",
+        "security": [{ "AuthorizationCode": ["items:apply_bbip"] }, { "ClientCredentials": [] }],
+        "summary": "Список заявок",
+        "tags": ["Promotion"]
+      }
+    },
+    "/promotion/v1/items/services/orders/status": {
+      "post": {
+        "description": "Получение статуса заявки на подключение услуг продвижения. Rate limit: 100 RPM",
+        "operationId": "get_order_status_v1",
+        "security": [{ "AuthorizationCode": ["items:apply_bbip"] }, { "ClientCredentials": [] }],
+        "summary": "Статус заявки",
+        "tags": ["Promotion"]
+      }
+    }
+  },
+  "servers": [{ "url": "https://api.avito.ru/" }],
+  "tags": [
+    { "description": "Общее API для чтения информации об услугах продвижения.", "name": "Promotion" },
+    { "description": "API для управления услугой \"Продвижение с прогнозом\".", "name": "Promotion_BBIP" }
+  ],
+  "x-workflow-note": "Подключение BBIP — строгий порядок: 1) выбрать объявления; 2) services/get — убедиться, что активной услуги BBIP ещё нет; 3) bbip/suggests/get — варианты бюджета/длительности; 4) bbip/forecasts/get — прогноз прироста просмотров под выбранный бюджет; 5) bbip/orders/create — создать заявку; 6) orders/status — проверить статус. Оплата — только с Кошелька Авито. Владелец прислала документ целиком 2026-09-10, включая этот порядок и коды ошибок 403000/403001/403002/403100/403101."
+}

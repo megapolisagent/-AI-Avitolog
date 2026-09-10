@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "apify": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@apify/actors-mcp-server", "--tools", "piotrv1001/avito-listings-scraper,one-api/cian-scraper"],
+      "env": {
+        "APIFY_TOKEN": "${APIFY_TOKEN}"
+      }
+    }
+  }
+}
