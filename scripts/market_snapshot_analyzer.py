@@ -113,6 +113,26 @@ def detect_duplicates(lots: list) -> list:
     return [duplicate_of.get(i) for i in range(len(lots))]
 
 
+def build_deduped_lots(lots: list) -> list:
+    """Лоты без дублей, со ВСЕМИ исходными полями (включая description, если он есть) —
+    analyze()/render_markdown_table() ниже агрегируют по комнатности и текст не сохраняют,
+    поэтому pain-point-extractor не может взять его из -table.md (баг найден на реальном
+    прогоне ALIA 2026-09-11: market-analyst кладёт description в сырой -comps.json/-target.json
+    по своей же инструкции, но до pain-point-extractor он не доживал). Admission-фильтр
+    намеренно продублирован из analyze(), не вынесен в общую функцию — чтобы не трогать
+    сигнатуру analyze() и не ломать её тесты."""
+    duplicate_of = detect_duplicates(lots)
+    deduped = []
+    for i, lot in enumerate(lots):
+        missing = [k for k in ("title", "price", "area", "seller_type", "url") if k not in lot]
+        if missing or not lot.get("area") or lot.get("price") is None:
+            continue
+        if duplicate_of[i] is not None:
+            continue
+        deduped.append(lot)
+    return deduped
+
+
 def load_snapshot(path: Path) -> list:
     with open(path, encoding="utf-8") as f:
         data = json.load(f)
@@ -289,6 +309,11 @@ def main():
     with open(table_path, "w", encoding="utf-8") as f:
         f.write(table_md + "\n")
 
+    lots_path = path.parent / f"{path.stem}-lots.json"
+    deduped_lots = build_deduped_lots(lots)
+    with open(lots_path, "w", encoding="utf-8") as f:
+        json.dump(deduped_lots, f, ensure_ascii=False, indent=2)
+
     print(f"Разобрано лотов: {len(lots)}")
     for rooms, g in report["groups"].items():
         median_note = f", медиана собственников: {g['owner_median_ppm2']} ₽/м²" if g['owner_median_ppm2'] is not None else ", медиана собственников: нет данных (owner-лотов 0)"
@@ -300,6 +325,7 @@ def main():
         print(f"Предупреждений: {len(report['warnings'])} — см. {out_path}")
     print(f"Полный отчёт: {out_path}")
     print(f"Таблица: {table_path}")
+    print(f"Лоты без дублей (с description для pain-point-extractor): {lots_path}")
 
 
 if __name__ == "__main__":

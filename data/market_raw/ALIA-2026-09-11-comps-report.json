@@ -1,0 +1,37 @@
+{
+  "groups": {
+    "2": {
+      "total_lots": 41,
+      "developer_lots": 0,
+      "agent_lots": 22,
+      "owner_lots": 19,
+      "unknown_seller_lots": 0,
+      "price_min": 20500000,
+      "price_median": 36000000,
+      "price_max": 68000000,
+      "with_renovation_lots": 17,
+      "without_renovation_lots": 7,
+      "unknown_renovation_lots": 17,
+      "owner_median_ppm2": 592334,
+      "owner_median_vs_asterus_pct": -4.9,
+      "suspicious_underpriced": 0,
+      "suspicious_urls": [],
+      "stale_secondary_lots": 1,
+      "stale_urls": [
+        "https://www.cian.ru/sale/flat/326567998/?mlSearchSessionGuid=c4de40778d158dadce96c1cd3c4e4171"
+      ],
+      "asterus_benchmark_ppm2": {
+        "min": 500500,
+        "median": 623000,
+        "max": 664510
+      },
+      "recommended_publish_corridor_ppm2": {
+        "min_ppm2": 425425,
+        "max_ppm2": 664510,
+        "note": "нижняя граница = эталон-минимум минус 15% (порог 'не фонарь'), верхняя = эталон-максимум"
+      }
+    }
+  },
+  "warnings": [],
+  "duplicates_removed": 5
+}
