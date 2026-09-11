@@ -1,0 +1,4 @@
+# Разбор сохранённых HTML-страниц Avito (scripts/parse_avito_html.py) — установить:
+#   pip install -r requirements.txt
+beautifulsoup4>=4.15
+lxml>=6.1
