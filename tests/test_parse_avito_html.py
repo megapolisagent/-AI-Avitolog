@@ -46,6 +46,7 @@ class TestExtractListings(unittest.TestCase):
     HTML = """
     <div data-marker="catalog-serp">
       <div data-marker="item" data-item-id="111" itemscope itemtype="http://schema.org/Product">
+        <meta itemprop="description" content="Продаётся уютная квартира рядом с парком, вид на реку, тихий двор без машин">
         <a data-marker="item-title" title="2-к. квартира, 60 м², 5/10 эт. в Москве" href="https://www.avito.ru/x/2-k._kvartira_60_m_510_et._111?context=abc">2-к.</a>
         <p data-marker="item-price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
           <meta itemprop="price" content="20000000">
@@ -69,6 +70,15 @@ class TestExtractListings(unittest.TestCase):
         self.assertEqual(lot["listing_age_days"], 5)
         self.assertEqual(lot["url"], "https://www.avito.ru/x/2-k._kvartira_60_m_510_et._111")
         self.assertIn("Тестовая", lot["address"])
+        self.assertIn("вид на реку", lot["description"])
+
+    def test_missing_description_meta_is_empty_string_not_crash(self):
+        html_without_description = self.HTML.replace(
+            '<meta itemprop="description" content="Продаётся уютная квартира рядом с парком, вид на реку, тихий двор без машин">',
+            "",
+        )
+        lot = parser.extract_listings(html_without_description)[0]
+        self.assertEqual(lot["description"], "")
 
     def test_seller_type_and_renovation_left_for_agent_judgment(self):
         lot = parser.extract_listings(self.HTML)[0]

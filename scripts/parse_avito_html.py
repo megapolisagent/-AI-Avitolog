@@ -7,18 +7,23 @@ Apify, только бесплатно и без риска блокировки
 
 Что делает и чего не делает:
   - Достаёт то, что физически есть в HTML страницы ВЫДАЧИ: заголовок, цену, площадь,
-    комнатность, адрес+короткие параметры, дату публикации, ссылку.
-  - НЕ достаёт полный текст объявления продавца (его на странице выдачи просто нет —
-    это отдельная страница конкретного лота) — поэтому pain-point-extractor не может
-    взять отсюда боли/текст, только market_snapshot_analyzer может взять цифры.
+    комнатность, адрес+короткие параметры, дату публикации, ссылку, превью текста
+    продавца (см. ниже про description).
+  - `description` — реальный текст продавца из `meta[itemprop="description"]` каждой
+    карточки, НЕ выдумка и НЕ пусто (ошибка первой версии этого скрипта, найдена и
+    исправлена 2026-09-11 — владелица указала на реальные лоты в HTML, где текст
+    физически есть). Но обрезан Авито ровно до 256 символов (SEO-сниппет, не полное
+    объявление) — обрывается на полуслове почти всегда. Это открывающий крючок текста,
+    не вся боль/аргументация продавца целиком — честный, но частичный вход для
+    `pain-point-extractor`, не замена детальному Apify-кроулингу, если нужен текст целиком.
   - НЕ определяет seller_type/renovation — это осознанно оставлено полем для суждения
     market-analyst (см. его SKILL, п.5/6 "единственное место, где нужно суждение") на
-    основании title/address/params этого же лота, не считается тут вслепую.
+    основании title/address/params/description этого же лота, не считается тут вслепую.
 
 Формат вывода — список объектов, полностью совместимый со схемой
 scripts/market_snapshot_analyzer.py (docstring в начале того файла): title, price, area,
-rooms, seller_type, renovation, listing_age_days, url — плюс address/params/date_text
-как сырой текст-подсказка для классификации агентом.
+rooms, seller_type, renovation, listing_age_days, url, description — плюс address/params/
+date_text как сырой текст-подсказка для классификации агентом.
 
 Запуск:
     pip install beautifulsoup4 lxml
@@ -103,6 +108,7 @@ def extract_listings(html_text: str) -> list[dict]:
     for item in soup.find_all("div", attrs={"data-marker": "item"}):
         title_link = item.find("a", attrs={"data-marker": "item-title"})
         price_meta = item.find("meta", attrs={"itemprop": "price"})
+        description_meta = item.find("meta", attrs={"itemprop": "description"})
         address = item.find(attrs={"data-marker": "item-address"})
         params = item.find(attrs={"data-marker": "item-specific-params"})
         date = item.find(attrs={"data-marker": "item-date"})
@@ -121,6 +127,7 @@ def extract_listings(html_text: str) -> list[dict]:
             "renovation": None,
             "listing_age_days": parse_listing_age_days(date_text),
             "url": url,
+            "description": description_meta.get("content", "").strip() if description_meta else "",
             "address": clean_text(address),
             "params": clean_text(params),
             "date_text": date_text,
@@ -148,7 +155,8 @@ def main() -> None:
     missing_area = sum(1 for l in listings if l["area"] is None)
     if missing_price or missing_area:
         print(f"Внимание: без цены — {missing_price}, без площади — {missing_area} (страница могла измениться)")
-    print(f"seller_type/renovation оставлены пустыми — классифицировать по title/address/params, не считать это готовым файлом для market_snapshot_analyzer.py")
+    print(f"seller_type/renovation оставлены пустыми — классифицировать по title/address/params/description, не считать это готовым файлом для market_snapshot_analyzer.py")
+    print(f"description — превью текста продавца, обрезано Авито до 256 символов, не весь текст объявления")
     print(f"Сохранено: {out_path}")
 
 
