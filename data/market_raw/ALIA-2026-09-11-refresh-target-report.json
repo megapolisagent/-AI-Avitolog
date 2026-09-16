@@ -1,0 +1,38 @@
+{
+  "groups": {
+    "2": {
+      "total_lots": 50,
+      "developer_lots": 39,
+      "agent_lots": 3,
+      "owner_lots": 0,
+      "unknown_seller_lots": 8,
+      "price_min": 24900000,
+      "price_median": 38615850,
+      "price_max": 49962000,
+      "with_renovation_lots": 1,
+      "without_renovation_lots": 2,
+      "unknown_renovation_lots": 47,
+      "owner_median_ppm2": null,
+      "owner_median_vs_asterus_pct": null,
+      "suspicious_underpriced": 2,
+      "suspicious_urls": [
+        "https://www.avito.ru/moskva/kvartiry/2-k._kvartira_677_m_1928_et._7539470855",
+        "https://www.avito.ru/moskva/kvartiry/2-k._kvartira_766_m_926_et._8140835223"
+      ],
+      "stale_secondary_lots": 0,
+      "stale_urls": [],
+      "asterus_benchmark_ppm2": {
+        "min": 500500,
+        "median": 623000,
+        "max": 664510
+      },
+      "recommended_publish_corridor_ppm2": {
+        "min_ppm2": 425425,
+        "max_ppm2": 664510,
+        "note": "нижняя граница = эталон-минимум минус 15% (порог 'не фонарь'), верхняя = эталон-максимум"
+      }
+    }
+  },
+  "warnings": [],
+  "duplicates_removed": 0
+}

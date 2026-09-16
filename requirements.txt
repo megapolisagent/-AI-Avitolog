@@ -1,4 +1,6 @@
-# Разбор сохранённых HTML-страниц Avito (scripts/parse_avito_html.py) — установить:
+# Разбор сохранённых HTML-страниц Avito (scripts/parse_avito_html.py,
+# scripts/avito_html_to_table.py) — установить:
 #   pip install -r requirements.txt
 beautifulsoup4>=4.15
 lxml>=6.1
+openpyxl>=3.1
