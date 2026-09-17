@@ -1,7 +1,6 @@
 {
   "permissions": {
-    "ask": ["Agent"],
-    "disableBypassPermissionsMode": "disable"
+    "ask": ["Agent"]
   },
   "hooks": {
     "PreToolUse": [
