@@ -1,4 +1,4 @@
-"""Тест scripts/market_snapshot_analyzer.py — дедупликация, эталонный порог, устаревание.
+"""Тест scripts/market_snapshot_analyzer.py — дедупликация, устаревание.
 Использует реальные пороги из config.json (не мокается — детерминированный расчёт
 должен считаться так же, как в бою)."""
 import unittest
@@ -42,13 +42,6 @@ class TestDuplicates(unittest.TestCase):
 
 
 class TestAnalyze(unittest.TestCase):
-    def test_below_benchmark_flagged_suspicious(self):
-        # Эталон 2-к min=500500 ₽/м² (ASTERUS_BENCHMARK_PPM2) — цена намного ниже 15%-порога.
-        cheap = lot(price=10_000_000, area=60, rooms=2, seller_type="owner")
-        report = analyzer.analyze([cheap])
-        group = report["groups"]["2"]
-        self.assertEqual(group["suspicious_underpriced"], 1)
-
     def test_missing_required_field_is_warned_not_crashed(self):
         broken = {"title": "нет цены/площади"}
         report = analyzer.analyze([broken])

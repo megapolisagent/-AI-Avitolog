@@ -26,13 +26,13 @@
   1. Группирует лоты по rooms.
   2. Считает цену за м² для каждого лота.
   3. Медиану по группе — из лотов seller_type == "owner" (сравнение "самих себя" вторички
-     с самой собой), затем сверяет с эталоном ASTERUS (knowledge/alia-asterus-price-benchmark.md,
-     жёстко прописан ниже, единственный источник эталона на сегодня).
-  4. Отсекает как "подозрительно занижено" всё, что ниже эталонного порога по комнатности
-     более чем на 15% (порог владельца, `workspace/2026-09-01-задача-*.md` про "фонари") —
-     не удаляет из отчёта, помечает явно, решение по каждому — за человеком.
-  5. Выводит рекомендованный коридор публикации: [эталон_мин * 0.85, эталон_макс] —
-     нижняя граница — порог "не фонарь", верхняя — не завышать против рынка бессмысленно.
+     с самой собой).
+
+Сравнение с эталоном цены застройщика убрано 2026-09-17 по решению владелицы вместе
+со всем остальным по прежнему ЖК — эталона для сравнения сейчас физически нет.
+Появится новый застройщик/ЖК — добавлять эталон и логику "подозрительно занижено"
+заново отдельным решением, не восстанавливать прежние цифры (см. git log на эту дату,
+если понадобится форма кода).
 
 Честно: скрипт не проверяет, откуда взялся market_snapshot.json, не умеет отличить
 настоящее объявление от подставного номера в самом файле — это ответственность
@@ -57,15 +57,6 @@ if sys.platform == "win32":
 SELLER_TYPE_FORM = {"developer", "agent", "owner"}
 RENOVATION_FORM = {"with", "without"}
 
-# Эталон ASTERUS по комнатности — из knowledge/alia-asterus-price-benchmark.md, 2026-09-01.
-# Дублируется здесь как константа, не читается из markdown на лету (нет парсера markdown-таблиц
-# в проекте) — если эталон обновится, поправить оба места, это отмечено тут и там.
-ASTERUS_BENCHMARK_PPM2 = {
-    1: {"min": 527100, "median": 631850, "max": 747650},
-    2: {"min": 500500, "median": 623000, "max": 664510},
-    3: {"min": 595980, "median": 696000, "max": 741000},
-}
-
 CONFIG_PATH = Path(__file__).resolve().parent.parent / "config.json"
 
 
@@ -78,7 +69,6 @@ def load_config() -> dict:
 
 
 CONFIG = load_config()
-FAKE_THRESHOLD_PCT = CONFIG["fake_threshold_pct"]
 DUPLICATE_AREA_TOLERANCE_M2 = CONFIG["duplicate_area_tolerance_m2"]
 DUPLICATE_PRICE_TOLERANCE_PCT = CONFIG["duplicate_price_tolerance_pct"]
 STALE_LISTING_DAYS_THRESHOLD = CONFIG["stale_listing_days_threshold"]
@@ -186,17 +176,7 @@ def analyze(lots: list) -> dict:
             seller in ("agent", "owner") and age is not None and age >= STALE_LISTING_DAYS_THRESHOLD
         )
 
-        bench = ASTERUS_BENCHMARK_PPM2.get(rooms)
-        if bench:
-            floor = bench["min"] * (1 - FAKE_THRESHOLD_PCT)
-            entry["below_15pct_of_benchmark_min"] = ppm2 < floor
-            entry["vs_median_pct"] = round((ppm2 - bench["median"]) / bench["median"] * 100, 1)
-        else:
-            entry["below_15pct_of_benchmark_min"] = None
-            entry["vs_median_pct"] = None
-            warnings.append(f"Лот #{i} ({lot['title']!r}) — комнатность {rooms!r} без эталона ASTERUS, пометка пропущена")
-
-        by_rooms[rooms if rooms in ASTERUS_BENCHMARK_PPM2 else "не определено"].append(entry)
+        by_rooms[rooms if rooms is not None else "не определено"].append(entry)
 
     report = {"groups": {}, "warnings": warnings, "duplicates_removed": duplicates_removed}
     for rooms, entries in by_rooms.items():
@@ -206,9 +186,7 @@ def analyze(lots: list) -> dict:
         unknown_seller = [e for e in entries if e.get("seller_type") not in SELLER_TYPE_FORM]
         with_renovation = [e for e in entries if e.get("renovation") == "with"]
         without_renovation = [e for e in entries if e.get("renovation") == "without"]
-        suspicious = [e for e in entries if e.get("below_15pct_of_benchmark_min")]
         stale = [e for e in entries if e.get("is_stale")]
-        bench = ASTERUS_BENCHMARK_PPM2.get(rooms)
 
         all_prices = [e["price"] for e in entries if e.get("price") is not None]
         price_min = min(all_prices) if all_prices else None
@@ -220,18 +198,6 @@ def analyze(lots: list) -> dict:
         # без них сравнение вторички с вторичкой невозможно, поле остаётся None.
         own_ppm2_list = [e["price_per_m2"] for e in own]
         owner_median_ppm2 = round(statistics.median(own_ppm2_list)) if own_ppm2_list else None
-        owner_median_vs_asterus_pct = (
-            round((owner_median_ppm2 - bench["median"]) / bench["median"] * 100, 1)
-            if (owner_median_ppm2 is not None and bench) else None
-        )
-
-        recommended_corridor = None
-        if bench:
-            recommended_corridor = {
-                "min_ppm2": round(bench["min"] * (1 - FAKE_THRESHOLD_PCT)),
-                "max_ppm2": bench["max"],
-                "note": "нижняя граница = эталон-минимум минус 15% (порог 'не фонарь'), верхняя = эталон-максимум",
-            }
 
         report["groups"][str(rooms)] = {
             "total_lots": len(entries),
@@ -246,13 +212,8 @@ def analyze(lots: list) -> dict:
             "without_renovation_lots": len(without_renovation),
             "unknown_renovation_lots": len(entries) - len(with_renovation) - len(without_renovation),
             "owner_median_ppm2": owner_median_ppm2,
-            "owner_median_vs_asterus_pct": owner_median_vs_asterus_pct,
-            "suspicious_underpriced": len(suspicious),
-            "suspicious_urls": [e["url"] for e in suspicious],
             "stale_secondary_lots": len(stale),
             "stale_urls": [e["url"] for e in stale],
-            "asterus_benchmark_ppm2": bench,
-            "recommended_publish_corridor_ppm2": recommended_corridor,
         }
     return report
 
@@ -317,7 +278,7 @@ def main():
     print(f"Разобрано лотов: {len(lots)}")
     for rooms, g in report["groups"].items():
         median_note = f", медиана собственников: {g['owner_median_ppm2']} ₽/м²" if g['owner_median_ppm2'] is not None else ", медиана собственников: нет данных (owner-лотов 0)"
-        print(f"  {rooms}-комн: {g['total_lots']} лотов ({g['developer_lots']} застройщик / {g['agent_lots']} агент / {g['owner_lots']} собственник), подозрительно занижено: {g['suspicious_underpriced']}{median_note}")
+        print(f"  {rooms}-комн: {g['total_lots']} лотов ({g['developer_lots']} застройщик / {g['agent_lots']} агент / {g['owner_lots']} собственник){median_note}")
     print()
     print(table_md)
     print()
