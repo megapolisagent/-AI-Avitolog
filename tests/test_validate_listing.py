@@ -89,6 +89,74 @@ class TestValidateListing(unittest.TestCase):
         with self.assertRaises(validate.InputError):
             validate.validate_listing({"price_field_value": 100})
 
+    def test_secondary_market_lot_skips_developer_group_and_legal_block(self):
+        result = validate.validate_listing(self._base())
+        group_check = next(c for c in result["checks"] if c["rule"] == "developer_group_gate")
+        legal_check = next(c for c in result["checks"] if c["rule"] == "legal_block_present")
+        self.assertEqual(group_check["status"], "pass")
+        self.assertEqual(legal_check["status"], "pass")
+        self.assertTrue(result["passed"])
+
+    def test_developer_group_3_always_fails(self):
+        result = validate.validate_listing(self._base(developer_group=3))
+        check = next(c for c in result["checks"] if c["rule"] == "developer_group_gate")
+        self.assertEqual(check["status"], "fail")
+        self.assertFalse(result["passed"])
+
+    def test_developer_group_2_without_acceptance_fails(self):
+        result = validate.validate_listing(
+            self._base(developer_group=2, developer_acceptance_confirmed=False)
+        )
+        check = next(c for c in result["checks"] if c["rule"] == "developer_group_gate")
+        self.assertEqual(check["status"], "fail")
+        self.assertFalse(result["passed"])
+
+    def test_developer_group_2_with_acceptance_passes(self):
+        result = validate.validate_listing(
+            self._base(developer_group=2, developer_acceptance_confirmed=True)
+        )
+        check = next(c for c in result["checks"] if c["rule"] == "developer_group_gate")
+        self.assertEqual(check["status"], "pass")
+
+    def test_developer_group_1_passes_without_acceptance(self):
+        result = validate.validate_listing(self._base(developer_group=1))
+        check = next(c for c in result["checks"] if c["rule"] == "developer_group_gate")
+        self.assertEqual(check["status"], "pass")
+
+    def test_invalid_developer_group_value_fails(self):
+        result = validate.validate_listing(self._base(developer_group=4))
+        check = next(c for c in result["checks"] if c["rule"] == "developer_group_gate")
+        self.assertEqual(check["status"], "fail")
+
+    def test_primary_market_without_legal_entity_fails(self):
+        result = validate.validate_listing(
+            self._base(is_primary_market=True, developer_legal_entity=None)
+        )
+        check = next(c for c in result["checks"] if c["rule"] == "legal_block_present")
+        self.assertEqual(check["status"], "fail")
+
+    def test_primary_market_missing_legal_block_in_text_fails(self):
+        result = validate.validate_listing(
+            self._base(is_primary_market=True, developer_legal_entity="ООО «Тест-Инвест»")
+        )
+        check = next(c for c in result["checks"] if c["rule"] == "legal_block_present")
+        self.assertEqual(check["status"], "fail")
+        self.assertIn("юр. лицо застройщика", check["detail"])
+
+    def test_primary_market_complete_legal_block_passes(self):
+        result = validate.validate_listing(self._base(
+            is_primary_market=True,
+            developer_legal_entity="ООО «Тест-Инвест»",
+            listing_text=(
+                "2-комн. евро, 46,2 м², ипотека от 1 ₽/мес по программе застройщика. "
+                "Продажа по ДДУ согласно ФЗ №214-ФЗ. Застройщик: ООО «Тест-Инвест». "
+                "Проектная декларация — наш.дом.рф."
+            ),
+        ))
+        check = next(c for c in result["checks"] if c["rule"] == "legal_block_present")
+        self.assertEqual(check["status"], "pass")
+        self.assertTrue(result["passed"])
+
 
 if __name__ == "__main__":
     unittest.main()

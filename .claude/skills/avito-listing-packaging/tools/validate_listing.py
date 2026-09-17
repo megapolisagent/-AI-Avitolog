@@ -11,6 +11,15 @@
 со списком подтверждённых чисел из данных лота, несовпадение — не автоматический провал, а
 `needs_review` для человека/агента, который писал текст.
 
+Правила 5-6 добавлены 2026-09-17 по ТЗ CMO (закрытие разрыва факт/регламент,
+`references/avito-operating-playbook.md`, раздел «Привязка к пайплайну» — пункты 1 и 2,
+приоритет «деньги/штрафы»). Правило 5 — гейт группы допуска застройщика (playbook, раздел 3):
+Группа 3 не публикуется никогда, Группа 2 — только с письменным акцептом. Правило 6 —
+обязательный юридический блок карточки (playbook, раздел 5) для объектов первичного рынка:
+ссылка на ДДУ/214-ФЗ, юр. лицо застройщика в тексте, ссылка на наш.дом.рф. Статус партнёрства
+(«уполномоченный»/«официальный») из раздела 5 сюда сознательно не входит — открытый вопрос
+владелицы, не решается этим скриптом (`avito-operating-playbook.md`, раздел 5, `[УТОЧНИТЬ]`).
+
 Использование: python3 validate_listing.py <путь к JSON со входом>, схема — INPUT_SCHEMA ниже.
 """
 from __future__ import annotations
@@ -28,6 +37,15 @@ INPUT_SCHEMA = {
     "floor_in_text": "число или null — этаж, упомянутый в тексте карточки, если есть",
     "confirmed_percent_facts": "список чисел, опционально — все проценты, реально данные во входных "
                                 "данных лота (скидка, ставка, ПВ %) — база для сверки правила 4",
+    "developer_group": "1, 2, 3 или null — группа допуска застройщика (playbook, раздел 3/6); "
+                        "null = лот не от застройщика (вторичка), правило 5 неприменимо",
+    "developer_acceptance_confirmed": "bool, опционально — только для Группы 2: получен ли "
+                                       "письменный акцепт застройщика на этот конкретный лот",
+    "is_primary_market": "bool — лот от застройщика (первичка, ДДУ)? Определяет, применяется ли "
+                          "правило 6 (юрблок обязателен только для первички, playbook раздел 5)",
+    "developer_legal_entity": "строка или null — точное юр. лицо застройщика из проектной "
+                               "декларации (наш.дом.рф), обязательно для правила 6, если "
+                               "is_primary_market",
 }
 
 PHONE_RE = re.compile(r"(\+7|8)[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{2}[\s\-]?\d{2}")
@@ -36,6 +54,9 @@ LINK_RE = re.compile(
     re.IGNORECASE,
 )
 PERCENT_RE = re.compile(r"(\d+(?:[.,]\d+)?)\s*%")
+DDU_RE = re.compile(r"(ДДУ|214-ФЗ|№\s*214-ФЗ|долевого строительства)", re.IGNORECASE)
+NASHDOM_RE = re.compile(r"наш\.дом\.рф", re.IGNORECASE)
+VALID_DEVELOPER_GROUPS = {1, 2, 3}
 
 
 class InputError(ValueError):
@@ -55,6 +76,10 @@ def validate_listing(data: dict) -> dict:
     floor_input = data.get("floor_input")
     floor_in_text = data.get("floor_in_text")
     confirmed_percent_facts = data.get("confirmed_percent_facts", [])
+    developer_group = data.get("developer_group")
+    developer_acceptance_confirmed = data.get("developer_acceptance_confirmed", False)
+    is_primary_market = data.get("is_primary_market", False)
+    developer_legal_entity = data.get("developer_legal_entity")
 
     checks = []
 
@@ -108,6 +133,55 @@ def validate_listing(data: dict) -> dict:
                         "detail": f"В тексте проценты {unmatched}, не найденные в подтверждённых "
                                   "фактах лота — не автоматический провал (правило не понимает "
                                   "смысл фразы), но требует ручной сверки перед публикацией."})
+
+    # Правило 5 — гейт группы допуска застройщика (playbook, раздел 3/6). Не лот от застройщика
+    # (developer_group is None) — правило неприменимо, не блокирует вторичку.
+    if developer_group is None:
+        checks.append({"rule": "developer_group_gate", "status": "pass",
+                        "detail": "developer_group не задан — лот не от застройщика, правило неприменимо."})
+    elif developer_group not in VALID_DEVELOPER_GROUPS:
+        checks.append({"rule": "developer_group_gate", "status": "fail",
+                        "detail": f"developer_group={developer_group!r} вне допустимых значений "
+                                  f"{sorted(VALID_DEVELOPER_GROUPS)} — похоже на ошибку данных, "
+                                  "не публикуется без исправления."})
+    elif developer_group == 3:
+        checks.append({"rule": "developer_group_gate", "status": "fail",
+                        "detail": "Группа 3 — прямой запрет на классифайды (playbook, раздел 3). "
+                                  "Публикация недопустима ни при каких условиях."})
+    elif developer_group == 2 and not developer_acceptance_confirmed:
+        checks.append({"rule": "developer_group_gate", "status": "fail",
+                        "detail": "Группа 2 требует письменного акцепта застройщика на этот лот "
+                                  "(playbook, раздел 4/8) — developer_acceptance_confirmed не подтверждён."})
+    else:
+        checks.append({"rule": "developer_group_gate", "status": "pass",
+                        "detail": f"Группа {developer_group} — публикация разрешена "
+                                  f"({'акцепт получен' if developer_group == 2 else 'без согласования'})."})
+
+    # Правило 6 — обязательный юридический блок карточки (playbook, раздел 5), только для первички.
+    # Статус партнёрства («уполномоченный»/«официальный») сознательно не проверяется — открытый
+    # вопрос владелицы (playbook, раздел 5, [УТОЧНИТЬ]), не решается этим скриптом.
+    if not is_primary_market:
+        checks.append({"rule": "legal_block_present", "status": "pass",
+                        "detail": "is_primary_market=False — лот не первичка, юрблок не обязателен."})
+    elif not developer_legal_entity:
+        checks.append({"rule": "legal_block_present", "status": "fail",
+                        "detail": "Первичка без юр. лица застройщика (developer_legal_entity) — "
+                                  "юрблок не может быть составлен, публикация заблокирована."})
+    else:
+        missing = []
+        if developer_legal_entity not in listing_text:
+            missing.append("юр. лицо застройщика")
+        if not DDU_RE.search(listing_text):
+            missing.append("ссылка на ДДУ/214-ФЗ")
+        if not NASHDOM_RE.search(listing_text):
+            missing.append("ссылка на наш.дом.рф")
+        if missing:
+            checks.append({"rule": "legal_block_present", "status": "fail",
+                            "detail": f"В тексте карточки не найдено: {', '.join(missing)} "
+                                      "(playbook, раздел 5 — обязательный юридический блок)."})
+        else:
+            checks.append({"rule": "legal_block_present", "status": "pass",
+                            "detail": "Юрлицо застройщика, ссылка на ДДУ/214-ФЗ и наш.дом.рф найдены в тексте."})
 
     hard_fails = [c for c in checks if c["status"] == "fail"]
     needs_review = [c for c in checks if c["status"] == "needs_review"]
