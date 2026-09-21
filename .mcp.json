@@ -7,14 +7,6 @@
       "env": {
         "APIFY_TOKEN": "${APIFY_TOKEN}"
       }
-    },
-    "firecrawl": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "firecrawl-mcp@3.23.0"],
-      "env": {
-        "FIRECRAWL_API_KEY": "${FIRECRAWL_API_KEY}"
-      }
     }
   }
 }
