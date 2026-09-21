@@ -1,6 +1,6 @@
 # Операционный регламент — размещение объектов застройщиков на Avito
 
-> Закреплено как постоянный стандарт 2026-09-17 по решению владелицы. Полный документ и история сборки — на стороне CMO: `AI Marketing Strategist/.claude/skills/marketing-strategy/references/avito-operating-playbook.md`. Эта копия — зеркало для реального пайплайна Авитолога, держать оба файла синхронно при следующей правке любого из них.
+> Постоянный стандарт. Полный документ — на стороне CMO: `AI Marketing Strategist/.claude/skills/marketing-strategy/references/avito-operating-playbook.md`. Эта копия — зеркало для реального пайплайна Авитолога, держать оба файла синхронно при следующей правке любого из них.
 >
 > Companion-файл: [`avito-object-worksheet-template.md`](avito-object-worksheet-template.md) — бланк на один лот, копируется заново под каждый объект, не хранится здесь как часть политики.
 >
