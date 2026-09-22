@@ -2,8 +2,8 @@
   "mcpServers": {
     "apify": {
       "type": "stdio",
-      "command": "cmd",
-      "args": ["/c", "npx", "-y", "@apify/actors-mcp-server", "--tools", "piotrv1001/avito-listings-scraper,one-api/cian-scraper"],
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": ["C:\\Users\\bogol\\AppData\\Roaming\\npm\\node_modules\\@apify\\actors-mcp-server\\dist\\stdio.js", "--tools", "piotrv1001/avito-listings-scraper,one-api/cian-scraper"],
       "env": {
         "APIFY_TOKEN": "${APIFY_TOKEN}"
       }
