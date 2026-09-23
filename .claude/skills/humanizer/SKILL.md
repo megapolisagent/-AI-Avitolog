@@ -10,8 +10,6 @@ metadata:
   version: "2.11.2"
 ---
 
-> Источник: `blader/humanizer` (GitHub, MIT license, оригинал — `references/LICENSE-original`).
-
 # Humanizer: remove AI writing patterns
 
 Rewrite AI-sounding text so it reads like the writer, not a chatbot. Do not change what it says or make up details.
