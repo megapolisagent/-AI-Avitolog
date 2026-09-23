@@ -1,10 +1,10 @@
-"""Тест humanizer/tools/check_banned_patterns.py — детерминированная проверка
+"""Тест listing-copywriter/tools/check_banned_patterns.py — детерминированная проверка
 банк-листа и канцелярита, не полагаться на то, что модель сама заметит штамп."""
 import unittest
 
 from _loader import load_module
 
-checker = load_module(".claude/skills/humanizer/tools/check_banned_patterns.py", "check_banned_patterns")
+checker = load_module(".claude/skills/listing-copywriter/tools/check_banned_patterns.py", "check_banned_patterns")
 
 
 class TestBannedWords(unittest.TestCase):

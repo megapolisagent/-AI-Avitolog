@@ -16,4 +16,4 @@
 
 ## Скиллы
 
-`avito-listing-packaging` (ядро), `cro-auditor`, `humanizer`, `lead-magnets` — все четыре активны, лежат в `.claude/skills/`.
+`avito-listing-packaging` (ядро), `cro-auditor`, `ru-text-critic`, `lead-magnets` — все четыре активны, лежат в `.claude/skills/`.
